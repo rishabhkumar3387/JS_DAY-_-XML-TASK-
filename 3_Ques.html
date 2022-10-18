@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+
+        const countriesList = document.getElementById("countries");
+        let countries;
+
+
+        countriesList.addEventListener("change", newCountrySelection);
+
+        function newCountrySelection(event) {
+            displayCountryInfo(event.target.value);
+        }
+
+
+        fetch("https://restcountries.eu/rest/v2/name/china")
+            .then(res => res.json())
+            .then(data => initialize(data))
+            .catch(err => console.log("Error:", err));
+            .catch (err => console.log("Error:", err));
+
+        function initialize(countriesData) {
+            countries = countriesData;
+            let options = "";
+
+            countries.forEach(country => options += `<option value="${country.alpha3Code}">${country.name}</option>`);
+
+            countriesList.innerHTML = options;
+
+            countriesList.selectedIndex = Math.floor(Math.random() * countriesList.length);
+            displayCountryInfo(countriesList[countriesList.selectedIndex].value);
+        }
+
+        function displayCountryInfo(countryByAlpha3Code) {
+            const countryData = countries.find(country => country.alpha3Code === countryByAlpha3Code);
+            document.querySelector("#flag-container img").src = countryData.flag;
+            document.querySelector("#flag-container img").alt = `Flag of ${countryData.name}`;
+            document.getElementById("capital").innerHTML = countryData.capital;
+            document.getElementById("dialing-code").innerHTML = `+${countryData.callingCodes[0]}`;
+            document.getElementById("population").innerHTML = countryData.population.toLocaleString("en-US");
+            document.getElementById("currencies").innerHTML = countryData.currencies.filter(c => c.name).map(c => `${c.name} (${c.code})`).join(", ");
+            document.getElementById("region").innerHTML = countryData.region;
+        }
+        <div class="row">
+            <div class="col-6"><img src="" alt=""></div>
+            <div id="countries" class="col-6">
+                <div><p>Capital:<span id="capital"></span></p></div>
+                <div><p>dialing Code:<span id="dialing-code"></span></p></div>
+                <div><p>Population:<span id="population"></span></p></div>
+                <div><p>Currencies:<span id="currencies"></span></p></div>
+                <div><p>Region:<span id="region"></span></p></div>
+            </div>
+        </div>
+    </script>
+</body>
+
+</html>
